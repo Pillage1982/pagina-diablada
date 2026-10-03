@@ -84,3 +84,59 @@ player.addEventListener('ended', function () {
 var year = new Date().getFullYear();
 document.getElementById('year').textContent = year;
 document.getElementById('anios').textContent = year - 1961;
+
+// Próximas actividades, leídas desde la app (app.gdcayquina.cl/publico/actividades)
+var eventGrid = document.getElementById('eventGrid');
+var MESES = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+var TIPOS = { entrenamiento: 'Ensayo', partido: 'Presentación', reunion: 'Reunión' };
+
+function el(tag, cls, text) {
+  var node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text) node.textContent = text;
+  return node;
+}
+
+function eventStatus(texto) {
+  var p = el('p', 'event-status', texto + ' ');
+  var a = el('a', null, 'Síguenos en Instagram');
+  a.href = 'https://instagram.com/gdcayquinaoficial';
+  a.target = '_blank';
+  a.rel = 'noopener';
+  p.appendChild(a);
+  p.appendChild(document.createTextNode(' para enterarte de las novedades.'));
+  eventGrid.replaceChildren(p);
+}
+
+function eventCard(ev) {
+  // fecha llega como "AAAA-MM-DD HH:MM:SS" en hora de Chile
+  var m = String(ev.fecha).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  if (!m) return null;
+  var card = el('div', 'event-card');
+  var date = el('div', 'event-date');
+  date.appendChild(el('span', 'd', String(Number(m[3]))));
+  date.appendChild(el('span', 'm', MESES[Number(m[2]) - 1]));
+  var body = el('div');
+  body.appendChild(el('h3', null, ev.nombre));
+  body.appendChild(el('p', 'when', (TIPOS[ev.tipo] || 'Actividad') + ' · ' + m[4] + ':' + m[5] + ' hrs'));
+  if (ev.ubicacion) body.appendChild(el('p', null, ev.ubicacion));
+  card.appendChild(date);
+  card.appendChild(body);
+  return card;
+}
+
+if (eventGrid) {
+  fetch(eventGrid.dataset.api)
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (eventos) {
+      var cards = eventos.map(eventCard).filter(Boolean);
+      if (!cards.length) return eventStatus('Por ahora no hay actividades programadas.');
+      eventGrid.replaceChildren.apply(eventGrid, cards);
+    })
+    .catch(function () {
+      eventStatus('No pudimos cargar el calendario en este momento.');
+    });
+}

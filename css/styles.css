@@ -63,6 +63,7 @@ h1,h2,h3{ text-wrap:balance; margin:0; }
 h1,h2{ font-family:'Abril Fatface', Georgia, serif; font-weight:400; }
 a{ color:inherit; }
 img{ display:block; max-width:100%; height:auto; }
+picture{ display:contents; }
 ::selection{ background:var(--azafran); color:var(--ground); }
 
 .eyebrow{
@@ -151,6 +152,11 @@ nav.mobile-menu{ display:none; }
   line-height:1.14;
   margin:.6rem 0 1rem;
   max-width:14ch;
+}
+.hero h1 .h1-brand{
+  display:block; font-family:'Archivo', sans-serif; font-weight:700;
+  font-size:.42em; letter-spacing:.04em; color:var(--azafran-ink);
+  margin-bottom:.45rem; max-width:none;
 }
 .hero p{ font-size:1.1rem; color:var(--ink-soft); max-width:52ch; }
 .hero .motto{
@@ -305,6 +311,8 @@ section.alt .directiva-item{ background:var(--ground-raised); }
 .event-date .m{ font-weight:600; font-size:.66rem; letter-spacing:.08em; }
 .event-card h3{ font-family:'Archivo', sans-serif; font-size:1.02rem; font-weight:700; margin-bottom:.3rem; }
 .event-card p{ margin:.2rem 0; font-size:.92rem; color:var(--ink-soft); }
+.event-status{ grid-column:1 / -1; margin:0; color:var(--ink-soft); }
+.event-status a{ color:var(--azafran-ink); }
 .event-card .when{ font-family:'Archivo', sans-serif; font-weight:600; color:var(--ink); font-size:.85rem; }
 
 /* contacto */

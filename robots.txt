@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: /img/certificado-notarial.jpg
+
+Sitemap: https://gdcayquina.cl/sitemap.xml
