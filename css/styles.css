@@ -325,6 +325,53 @@ section.alt .directiva-item{ background:var(--ground-raised); }
 .contact-links a{ text-decoration:none; }
 .contact-links a:hover{ color:var(--azafran-ink); }
 
+button.btn{ cursor:pointer; background:none; }
+button.btn-solid{ background:var(--azafran); border:none; }
+
+/* solicitud de ingreso ("Súmate a la promesa") */
+dialog.solicitud{
+  width:min(640px, calc(100% - 2rem)); max-height:calc(100dvh - 2rem);
+  padding:0; border:1px solid var(--line); border-radius:6px;
+  background:var(--ground-panel); color:var(--ink);
+  box-shadow:0 20px 50px var(--shadow);
+}
+dialog.solicitud::backdrop{ background:rgba(20,12,6,.6); }
+.solicitud form{ padding:1.6rem 1.8rem 1.8rem; display:flex; flex-direction:column; gap:1rem; }
+.solicitud-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+.solicitud-head h2{ font-size:1.7rem; }
+.solicitud-cerrar{
+  background:none; border:1px solid var(--line); border-radius:8px; color:var(--ink);
+  width:36px; height:36px; font-size:1rem; cursor:pointer; flex:none;
+}
+.solicitud-intro{ margin:0; color:var(--ink-soft); font-size:.98rem; line-height:1.55; }
+.solicitud-grid{ display:grid; grid-template-columns:1fr 1fr; gap:.9rem 1rem; }
+.solicitud-grid .ancho{ grid-column:1 / -1; }
+.solicitud label{
+  display:flex; flex-direction:column; gap:.3rem;
+  font-family:'Archivo', sans-serif; font-weight:600; font-size:.8rem; color:var(--ink);
+}
+.solicitud .opcional{ font-weight:500; color:var(--ink-soft); }
+.solicitud input, .solicitud select, .solicitud textarea{
+  font:inherit; font-weight:500; font-size:.95rem; color:var(--ink);
+  background:var(--ground); border:1px solid var(--line); border-radius:4px;
+  padding:.6rem .7rem; width:100%;
+}
+.solicitud input:focus-visible, .solicitud select:focus-visible, .solicitud textarea:focus-visible{
+  outline:2px solid var(--azafran); outline-offset:1px;
+}
+.solicitud textarea{ resize:vertical; }
+.solicitud-apoderado{ border:1px solid var(--line); border-radius:4px; padding:1rem; margin:0; }
+.solicitud-apoderado legend{ font-family:'Archivo', sans-serif; font-weight:700; font-size:.85rem; padding:0 .4rem; color:var(--oxblood); }
+.solicitud-apoderado p{ margin:0 0 .8rem; font-size:.92rem; color:var(--ink-soft); }
+.solicitud .solicitud-check{ flex-direction:row; align-items:flex-start; gap:.6rem; font-weight:500; line-height:1.45; }
+.solicitud .solicitud-check input{ width:auto; margin-top:.15rem; accent-color:var(--azafran); }
+.solicitud .solicitud-trampa{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+.solicitud-estado{ margin:0; font-family:'Archivo', sans-serif; font-size:.88rem; min-height:1.2em; }
+.solicitud-estado.error{ color:var(--oxblood); }
+.solicitud-estado.ok{ color:var(--turquesa); }
+.solicitud-acciones{ display:flex; justify-content:flex-end; gap:.8rem; flex-wrap:wrap; }
+.solicitud-acciones .btn:disabled{ opacity:.6; cursor:wait; transform:none; }
+
 footer{
   padding:2.5rem 0; border-top:1px solid var(--line);
   font-family:'Archivo', sans-serif; font-size:.8rem; color:var(--ink-soft);
@@ -356,6 +403,8 @@ footer{
   .brand-word small{ display:none; }
   .btn.btn-app{ padding:.5rem .8rem; }
   .directiva-grid{ grid-template-columns:1fr; }
+  .solicitud form{ padding:1.2rem 1rem 1.4rem; }
+  .solicitud-grid{ grid-template-columns:1fr; }
 }
 
 @media (prefers-reduced-motion: reduce){

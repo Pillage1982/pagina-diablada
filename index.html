@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=5">
+  <link rel="stylesheet" href="css/styles.css?v=6">
 
   <script type="application/ld+json">
 {
@@ -391,7 +391,7 @@
         <p>La Gran Diablada Calameña danza la representación de la eterna lucha entre el Bien y el Mal en las festividades religiosas del poblado de Ayquina en el norte de Chile.</p>
         <div class="cta-row">
           <a class="btn btn-solid" href="#actividades">Ver próxima actividad</a>
-          <a class="btn btn-ghost" href="#contacto">Súmate a la comparsa</a>
+          <button class="btn btn-ghost" type="button" data-abrir-solicitud>Súmate a la promesa</button>
         </div>
       </div>
     </div>
@@ -616,7 +616,10 @@
         <h2>Súmate a la promesa</h2>
       </div>
       <div class="contact-card">
-        <p class="prose" style="margin:0; color:var(--ink-soft);">¿Quieres bailar, hacerte socio o simplemente saber más sobre la Diablada? Escríbenos por cualquiera de estos canales.</p>
+        <div>
+          <p class="prose" style="margin:0; color:var(--ink-soft);">¿Quieres bailar, hacerte socio o simplemente saber más sobre la Diablada? Envía tu solicitud o escríbenos por cualquiera de estos canales.</p>
+          <button class="btn btn-solid" type="button" data-abrir-solicitud style="margin-top:1.2rem;">Enviar solicitud de ingreso</button>
+        </div>
         <div class="contact-links">
           <a href="mailto:gdcayquina@gmail.com">✉ gdcayquina@gmail.com</a>
           <a href="https://instagram.com/gdcayquinaoficial" target="_blank" rel="noopener">◎ @gdcayquinaoficial</a>
@@ -627,6 +630,71 @@
   </section>
 
 </main>
+
+<dialog class="solicitud" id="solicitudDialog" aria-labelledby="solicitudTitulo">
+  <form id="solicitudForm" data-api="https://app.gdcayquina.cl/publico/solicitud-ingreso" novalidate>
+    <div class="solicitud-head">
+      <div>
+        <p class="eyebrow">Solicitud de ingreso</p>
+        <h2 id="solicitudTitulo">Súmate a la promesa</h2>
+      </div>
+      <button class="solicitud-cerrar" type="button" data-cerrar-solicitud aria-label="Cerrar">✕</button>
+    </div>
+    <p class="solicitud-intro">Completa tus datos básicos. La directiva revisará tu solicitud y, si es aceptada, te avisaremos por correo para que termines tu inscripción en la App.</p>
+
+    <div class="solicitud-grid">
+      <label>RUT<input name="rut" required autocomplete="off" placeholder="12.345.678-9"></label>
+      <label>Fecha de nacimiento<input name="fecha_nacimiento" type="date" required></label>
+      <label>Nombres<input name="nombres" required autocomplete="given-name"></label>
+      <label>Apellido paterno<input name="apellido_paterno" required autocomplete="family-name"></label>
+      <label>Apellido materno <span class="opcional">(opcional)</span><input name="apellido_materno"></label>
+      <label>Celular<input name="telefono" type="tel" required autocomplete="tel" placeholder="+56 9 1234 5678"></label>
+      <label class="ancho">Correo electrónico<input name="email" type="email" required autocomplete="email"></label>
+      <label class="ancho">Comparsa que te interesa <span class="opcional">(opcional)</span>
+        <select name="comparsa_interes">
+          <option value="">Aún no lo sé</option>
+          <option>Arcángeles</option>
+          <option>Bloque Infantil</option>
+          <option>Figurines (Cóndor, Perros del Infierno, Condenados, Chinas de Antaño)</option>
+          <option>Ñawpas</option>
+          <option>China Supay</option>
+          <option>Osos</option>
+          <option>Chinas Doble Cara</option>
+          <option>Waris &amp; Luciferes</option>
+          <option>Virtudes</option>
+          <option>Tentaciones &amp; Pecados</option>
+          <option>Diablesas</option>
+          <option>Diablos</option>
+          <option>Jukumaris</option>
+          <option>K'acha Viuda &amp; Yana conciencia</option>
+        </select>
+      </label>
+    </div>
+
+    <fieldset class="solicitud-apoderado" id="solicitudApoderado" hidden>
+      <legend>Datos del apoderado</legend>
+      <p>Como eres menor de edad, necesitamos los datos de tu apoderado.</p>
+      <div class="solicitud-grid">
+        <label class="ancho">Nombre completo del apoderado<input name="nombre_apoderado"></label>
+        <label>RUT del apoderado<input name="rut_apoderado" autocomplete="off" placeholder="12.345.678-9"></label>
+        <label>Celular del apoderado<input name="telefono_apoderado" type="tel" placeholder="+56 9 1234 5678"></label>
+      </div>
+    </fieldset>
+
+    <label class="ancho">Mensaje <span class="opcional">(opcional)</span><textarea name="mensaje" rows="3" maxlength="500"></textarea></label>
+
+    <label class="solicitud-trampa" aria-hidden="true">Sitio web<input name="sitio_web" tabindex="-1" autocomplete="off"></label>
+
+    <label class="solicitud-check"><input type="checkbox" name="acepta_datos" required> Autorizo a la Gran Diablada Calameña a usar estos datos solo para revisar mi solicitud y contactarme.</label>
+
+    <p class="solicitud-estado" id="solicitudEstado" role="status" aria-live="polite"></p>
+
+    <div class="solicitud-acciones">
+      <button class="btn btn-ghost" type="button" data-cerrar-solicitud>Cancelar</button>
+      <button class="btn btn-solid" type="submit">Enviar solicitud</button>
+    </div>
+  </form>
+</dialog>
 
 <footer>
   <div class="wrap footer-row">
@@ -641,6 +709,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=3" defer></script>
+<script src="js/main.js?v=4" defer></script>
 </body>
 </html>
