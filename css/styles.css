@@ -277,12 +277,13 @@ figcaption{
 .rights a{ color:var(--ink); }
 
 /* directiva */
+/* Las líneas son un borde por recuadro, así una fila incompleta no deja un bloque de color */
 .directiva-grid{
-  display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;
-  background:var(--line); border:1px solid var(--line);
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; padding:1px;
 }
 .directiva-item{
   background:var(--ground); padding:1.3rem 1.4rem;
+  box-shadow:0 0 0 1px var(--line);
 }
 section.alt .directiva-item{ background:var(--ground-raised); }
 .directiva-item .cargo{
@@ -290,6 +291,7 @@ section.alt .directiva-item{ background:var(--ground-raised); }
   letter-spacing:.08em; text-transform:uppercase; color:var(--turquesa);
 }
 .directiva-item .nombre{ font-size:1.05rem; margin-top:.3rem; }
+.directiva-item .nombre.vacio{ color:var(--ink-soft); }
 
 /* actividades */
 .demo-flag{
