@@ -476,6 +476,30 @@ footer{
   font-size:clamp(.95rem, 1.8vw, 1.2rem); line-height:1.35;
 }
 .fiesta-texto em{ font-style:normal; white-space:nowrap; }
+.fiesta-texto .fiesta-ver{ margin-top:.8rem; border:0; cursor:pointer; font-size:.95rem; }
+
+dialog.saludos{
+  width:min(1100px, calc(100% - 2rem)); max-height:calc(100dvh - 2rem);
+  padding:1.4rem 1.6rem 1.6rem; border:1px solid var(--line); border-radius:6px;
+  background:var(--ground-panel); color:var(--ink);
+  box-shadow:0 20px 50px var(--shadow);
+}
+dialog.saludos::backdrop{ background:rgba(20,12,6,.75); }
+.saludos-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; }
+.saludos-head h2{ margin:0; font-size:1.7rem; }
+.saludos-grid{
+  display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start;
+  gap:1rem; margin-top:1rem;
+}
+.saludos video{
+  display:block; width:auto; height:min(58vh, 440px); max-width:100%;
+  background:#000; border-radius:6px;
+}
+@media (max-width: 700px){
+  dialog.saludos{ padding:1rem; }
+  .saludos-head h2{ font-size:1.35rem; line-height:1.2; }
+  .saludos video{ width:100%; height:auto; max-height:70vh; }
+}
 .fiesta-cerrar{
   flex:none; width:34px; height:34px; border:0; border-radius:50%;
   background:transparent; color:inherit; font-size:1.1rem; cursor:pointer;

@@ -320,6 +320,60 @@ function crearCanon(lado) {
   return canon;
 }
 
+// Videos de saludo que se muestran durante el aniversario (botón "Ver saludos" del cartel)
+var SALUDOS = [
+  { src: 'video/saludo-aniversario-1.mp4', poster: 'img/saludo-aniversario-1.jpg', w: 854, h: 480 },
+  { src: 'video/saludo-aniversario-2.mp4', poster: 'img/saludo-aniversario-2.jpg', w: 576, h: 1024 }
+];
+var saludosDialog = null;
+
+function crearSaludosDialog() {
+  saludosDialog = el('dialog', 'saludos');
+  saludosDialog.setAttribute('aria-labelledby', 'saludosTitulo');
+  var head = el('div', 'saludos-head');
+  var titulo = el('h2', null, 'Saludos de aniversario');
+  titulo.id = 'saludosTitulo';
+  var cerrar = el('button', 'solicitud-cerrar', '✕');
+  cerrar.type = 'button';
+  cerrar.setAttribute('aria-label', 'Cerrar');
+  cerrar.addEventListener('click', function () { saludosDialog.close(); });
+  head.appendChild(titulo);
+  head.appendChild(cerrar);
+  saludosDialog.appendChild(head);
+
+  var grid = el('div', 'saludos-grid');
+  var videos = SALUDOS.map(function (s, i) {
+    var v = el('video');
+    v.src = s.src;
+    v.poster = s.poster;
+    v.width = s.w;
+    v.height = s.h;
+    v.controls = true;
+    v.preload = 'none';
+    v.playsInline = true;
+    v.setAttribute('aria-label', 'Saludo de aniversario ' + (i + 1));
+    grid.appendChild(v);
+    return v;
+  });
+  // Solo un video a la vez, y se pausa la música si estaba sonando
+  videos.forEach(function (v) {
+    v.addEventListener('play', function () {
+      videos.forEach(function (otro) { if (otro !== v) otro.pause(); });
+      player.pause();
+    });
+  });
+  saludosDialog.appendChild(grid);
+
+  saludosDialog.addEventListener('close', function () {
+    videos.forEach(function (v) { v.pause(); });
+  });
+  saludosDialog.addEventListener('click', function (e) {
+    if (e.target === saludosDialog) saludosDialog.close();
+  });
+  document.body.appendChild(saludosDialog);
+  return saludosDialog;
+}
+
 function celebrarAniversario() {
   var msg = el('div', 'fiesta-msg');
   var texto = el('div', 'fiesta-texto');
@@ -327,6 +381,12 @@ function celebrarAniversario() {
   var linea = el('span', null, (new Date().getFullYear() - 1961) + ' años de fe y tradición · ');
   linea.appendChild(el('em', null, '22 de octubre de 1961'));
   texto.appendChild(linea);
+  var verSaludos = el('button', 'btn btn-solid fiesta-ver', '▶ Ver saludos');
+  verSaludos.type = 'button';
+  verSaludos.addEventListener('click', function () {
+    (saludosDialog || crearSaludosDialog()).showModal();
+  });
+  texto.appendChild(verSaludos);
   msg.appendChild(texto);
   var cerrar = el('button', 'fiesta-cerrar', '✕');
   cerrar.type = 'button';
