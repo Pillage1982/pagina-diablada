@@ -407,6 +407,87 @@ footer{
   .solicitud-grid{ grid-template-columns:1fr; }
 }
 
+/* ============================================================
+   ANIVERSARIO — cañones de confeti, lluvia de papeles y globos
+   (se activa desde js/main.js entre el 20 y el 24 de octubre)
+   ============================================================ */
+.fiesta-canvas{
+  position:fixed; inset:0; width:100%; height:100%;
+  pointer-events:none; z-index:30;
+}
+.cannon{
+  position:fixed; bottom:14px; z-index:31;
+  width:120px; height:96px; pointer-events:none;
+  transition:transform .7s cubic-bezier(.2,.9,.3,1.25);
+}
+.cannon-left{ left:8px; transform:translateX(-170%); }
+.cannon-right{ right:8px; transform:translateX(170%); }
+.cannon.in{ transform:translateX(0); }
+.cannon-body{ position:absolute; inset:0; }
+.cannon-right .cannon-body{ transform:scaleX(-1); }
+.cannon-barrel{
+  position:absolute; left:26px; bottom:30px;
+  width:86px; height:30px; border-radius:8px 6px 6px 12px;
+  background:linear-gradient(180deg, #A8352B 0%, #7A211B 55%, #4E140F 100%);
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.18), 0 3px 8px var(--shadow);
+  transform-origin:12px 50%; transform:rotate(-58deg);
+}
+.cannon-barrel::before{
+  content:""; position:absolute; left:30px; top:0; bottom:0; width:8px;
+  background:#E68A2E; opacity:.9;
+}
+.cannon-muzzle{
+  position:absolute; right:-6px; top:-4px; width:12px; height:38px;
+  border-radius:4px; background:linear-gradient(90deg, #E68A2E, #C9680E);
+}
+.cannon-wheel{
+  position:absolute; left:14px; bottom:4px; width:42px; height:42px;
+  border-radius:50%; border:5px solid #4E2C10;
+  background:radial-gradient(circle, #E68A2E 0 5px, #6B4220 6px 100%);
+  box-shadow:0 3px 6px var(--shadow);
+}
+.cannon.fire .cannon-barrel{ animation:cannon-recoil .45s ease-out; }
+@keyframes cannon-recoil{
+  0%  { transform:rotate(-58deg) translateX(0); }
+  20% { transform:rotate(-54deg) translateX(-14px); }
+  100%{ transform:rotate(-58deg) translateX(0); }
+}
+
+.fiesta-msg{
+  position:fixed; top:82px; left:50%; z-index:32;
+  display:flex; align-items:flex-start; gap:1rem;
+  width:max-content; max-width:calc(100% - 32px); padding:1.1rem 1rem 1.2rem 2rem;
+  border:3px solid #E68A2E; border-radius:18px;
+  background:#241608; color:#F6EEE0;
+  box-shadow:0 14px 40px var(--shadow), 0 0 0 6px rgba(201,104,14,.25);
+  opacity:0; pointer-events:none;
+  transform:translate(-50%, -12px);
+  transition:opacity .5s, transform .5s;
+}
+.fiesta-msg.visible{ opacity:1; pointer-events:auto; transform:translate(-50%, 0); }
+.fiesta-texto{ text-align:center; }
+.fiesta-texto strong{
+  display:block; font-family:'Abril Fatface', Georgia, serif; font-weight:400;
+  font-size:clamp(1.9rem, 4.5vw, 3rem); line-height:1.1; color:#E68A2E;
+}
+.fiesta-texto span{
+  display:block; margin-top:.35rem;
+  font-family:'Archivo', sans-serif; font-weight:700;
+  font-size:clamp(.95rem, 1.8vw, 1.2rem); line-height:1.35;
+}
+.fiesta-texto em{ font-style:normal; white-space:nowrap; }
+.fiesta-cerrar{
+  flex:none; width:34px; height:34px; border:0; border-radius:50%;
+  background:transparent; color:inherit; font-size:1.1rem; cursor:pointer;
+}
+.fiesta-cerrar:hover, .fiesta-cerrar:focus-visible{ background:var(--azafran); color:#fff; }
+@media (max-width: 480px){
+  .cannon{ width:96px; height:80px; }
+  .cannon-body{ transform:scale(.8); transform-origin:center bottom; }
+  .cannon-right .cannon-body{ transform:scale(-.8, .8); }
+  .fiesta-msg{ padding:.9rem .6rem 1rem 1.2rem; gap:.4rem; }
+}
+
 @media (prefers-reduced-motion: reduce){
   *{ transition:none !important; }
   html{ scroll-behavior:auto; }

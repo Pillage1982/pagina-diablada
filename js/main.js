@@ -291,3 +291,209 @@ if (solicitudDialog && solicitudForm) {
       .finally(function () { enviar.disabled = false; });
   });
 }
+
+// Aniversario (22 de octubre de 1961): dos cañones lanzan confeti, luego sigue
+// cayendo confeti y suben globos. Se activa desde dos días antes hasta dos días
+// después de la fecha. Para probarlo fuera de esas fechas: gdcayquina.cl/?aniversario
+var ANIVERSARIO_MES = 9; // octubre (enero = 0)
+var ANIVERSARIO_DIA = 22;
+var FIESTA_COLORES = ['#C9680E', '#E68A2E', '#7A211B', '#D9584A', '#2B6F6B', '#59C2BA', '#F2C14E', '#F6EEE0'];
+
+function enAniversario(hoy) {
+  var fecha = new Date(hoy.getFullYear(), ANIVERSARIO_MES, ANIVERSARIO_DIA);
+  var dia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  return Math.abs(Math.round((dia - fecha) / 864e5)) <= 2;
+}
+
+function azar(a, b) { return a + Math.random() * (b - a); }
+
+function crearCanon(lado) {
+  var canon = el('div', 'cannon cannon-' + lado);
+  canon.setAttribute('aria-hidden', 'true');
+  var cuerpo = el('div', 'cannon-body');
+  var tubo = el('div', 'cannon-barrel');
+  tubo.appendChild(el('span', 'cannon-muzzle'));
+  cuerpo.appendChild(tubo);
+  cuerpo.appendChild(el('span', 'cannon-wheel'));
+  canon.appendChild(cuerpo);
+  document.body.appendChild(canon);
+  return canon;
+}
+
+function celebrarAniversario() {
+  var msg = el('div', 'fiesta-msg');
+  var texto = el('div', 'fiesta-texto');
+  texto.appendChild(el('strong', null, '¡Feliz aniversario!'));
+  var linea = el('span', null, (new Date().getFullYear() - 1961) + ' años de fe y tradición · ');
+  linea.appendChild(el('em', null, '22 de octubre de 1961'));
+  texto.appendChild(linea);
+  msg.appendChild(texto);
+  var cerrar = el('button', 'fiesta-cerrar', '✕');
+  cerrar.type = 'button';
+  cerrar.setAttribute('aria-label', 'Cerrar saludo');
+  // Cerrar solo oculta el saludo: el confeti y los globos siguen
+  cerrar.addEventListener('click', function () { msg.classList.remove('visible'); });
+  msg.appendChild(cerrar);
+  document.body.appendChild(msg);
+
+  // Con movimiento reducido solo se muestra el saludo
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    msg.classList.add('visible');
+    return;
+  }
+
+  var canvas = el('canvas', 'fiesta-canvas');
+  canvas.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+  var W = 0, H = 0;
+  function medir() {
+    // En celular la barra del navegador aparece y desaparece al hacer scroll y cambia
+    // el alto: solo se redimensiona si cambia el ancho o la pantalla crece.
+    if (window.innerWidth === W && window.innerHeight <= H) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  medir();
+  window.addEventListener('resize', medir);
+
+  var movil = W < 640;
+  var MAX_LLUVIA = movil ? 55 : 110;
+  var MAX_GLOBOS = movil ? 5 : 9;
+  var confeti = [];
+  var globos = [];
+  var lluvia = false;
+  var acumulado = 0;
+  var proximoGlobo = 0;
+
+  function papel(x, y, vx, vy, cae) {
+    confeti.push({
+      x: x, y: y, vx: vx, vy: vy, cae: cae,
+      w: azar(5, 10), h: azar(8, 16),
+      rot: azar(0, 6.28), vrot: azar(-6, 6),
+      giro: azar(0, 6.28), vgiro: azar(4, 10),
+      fase: azar(0, 6.28),
+      color: FIESTA_COLORES[Math.floor(Math.random() * FIESTA_COLORES.length)]
+    });
+  }
+
+  function disparar(canon, dir) {
+    var boca = canon.querySelector('.cannon-muzzle').getBoundingClientRect();
+    var x = boca.left + boca.width / 2;
+    var y = boca.top + boca.height / 2;
+    var n = movil ? 70 : 130;
+    for (var i = 0; i < n; i++) {
+      var ang = azar(48, 72) * Math.PI / 180;
+      var v = H * azar(1.4, 2.6);
+      papel(x, y, dir * Math.cos(ang) * v, -Math.sin(ang) * v, false);
+    }
+    canon.classList.remove('fire');
+    void canon.offsetWidth; // reinicia la animación de retroceso
+    canon.classList.add('fire');
+  }
+
+  function globo() {
+    var r = movil ? azar(16, 24) : azar(22, 32);
+    globos.push({
+      x: azar(W * 0.05, W * 0.95), y: H + r * 2, r: r,
+      v: azar(55, 105), fase: azar(0, 6.28), amp: azar(10, 26),
+      color: FIESTA_COLORES[Math.floor(Math.random() * 7)]
+    });
+  }
+
+  function dibujarGlobo(g, t) {
+    var x = g.x + Math.sin(t * 1.2 + g.fase) * g.amp;
+    var y = g.y;
+    // Hilo ondulado
+    ctx.strokeStyle = 'rgba(120,100,80,0.7)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y + g.r * 1.2);
+    for (var i = 1; i <= 8; i++) {
+      ctx.lineTo(x + Math.sin(t * 3 + g.fase + i) * 3, y + g.r * 1.2 + i * g.r * 0.35);
+    }
+    ctx.stroke();
+    // Nudo
+    ctx.fillStyle = g.color;
+    ctx.beginPath();
+    ctx.moveTo(x, y + g.r * 1.12);
+    ctx.lineTo(x - 4, y + g.r * 1.32);
+    ctx.lineTo(x + 4, y + g.r * 1.32);
+    ctx.fill();
+    // Cuerpo con brillo
+    var grad = ctx.createRadialGradient(x - g.r * 0.35, y - g.r * 0.45, g.r * 0.1, x, y, g.r * 1.2);
+    grad.addColorStop(0, 'rgba(255,255,255,0.75)');
+    grad.addColorStop(0.25, g.color);
+    grad.addColorStop(1, g.color);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.ellipse(x, y, g.r, g.r * 1.18, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  var antes = performance.now();
+  function cuadro(ahora) {
+    var dt = Math.min((ahora - antes) / 1000, 0.05);
+    antes = ahora;
+    var t = ahora / 1000;
+    ctx.clearRect(0, 0, W, H);
+
+    if (lluvia) {
+      // Mantiene la lluvia pareja: entran tantos papeles como los que salen por abajo
+      acumulado += dt * MAX_LLUVIA / (H / 110);
+      var cayendo = confeti.filter(function (p) { return p.cae; }).length;
+      while (acumulado >= 1) {
+        acumulado--;
+        if (cayendo++ < MAX_LLUVIA) papel(azar(0, W), -20, azar(-20, 20), azar(60, 140), true);
+      }
+      proximoGlobo -= dt;
+      if (proximoGlobo <= 0 && globos.length < MAX_GLOBOS) {
+        globo();
+        proximoGlobo = azar(1.2, 3.2);
+      }
+    }
+
+    var roce = Math.exp(-2.6 * dt);
+    confeti = confeti.filter(function (p) {
+      p.vx = p.vx * roce;
+      p.vy = p.vy * roce + 380 * dt;
+      p.x += (p.vx + Math.sin(t * 2 + p.fase) * 30) * dt;
+      p.y += p.vy * dt;
+      p.rot += p.vrot * dt;
+      p.giro += p.vgiro * dt;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.scale(1, Math.cos(p.giro));
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+      return p.y < H + 30;
+    });
+
+    globos = globos.filter(function (g) {
+      g.y -= g.v * dt;
+      dibujarGlobo(g, t);
+      return g.y > -g.r * 5;
+    });
+
+    requestAnimationFrame(cuadro);
+  }
+  requestAnimationFrame(cuadro);
+
+  // Secuencia: entran los cañones, disparan dos veces, salen y queda la fiesta
+  var izq = crearCanon('left');
+  var der = crearCanon('right');
+  setTimeout(function () { izq.classList.add('in'); der.classList.add('in'); }, 300);
+  setTimeout(function () { disparar(izq, 1); disparar(der, -1); msg.classList.add('visible'); }, 1200);
+  setTimeout(function () { disparar(izq, 1); disparar(der, -1); }, 1900);
+  setTimeout(function () { lluvia = true; }, 2300);
+  setTimeout(function () { izq.classList.remove('in'); der.classList.remove('in'); }, 3400);
+  setTimeout(function () { izq.remove(); der.remove(); }, 4400);
+}
+
+if (/[?&]aniversario\b/.test(location.search) || enAniversario(new Date())) celebrarAniversario();
