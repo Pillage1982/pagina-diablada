@@ -32,7 +32,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=10">
+  <link rel="stylesheet" href="css/styles.css?v=11">
 
   <script type="application/ld+json">
 {
@@ -646,17 +646,47 @@
       </div>
       <button class="solicitud-cerrar" type="button" data-cerrar-solicitud aria-label="Cerrar">✕</button>
     </div>
-    <p class="solicitud-intro">Completa tus datos básicos. La directiva revisará tu solicitud y, si es aceptada, te avisaremos por correo para que termines tu inscripción en la App.</p>
+    <p class="solicitud-intro">Completa tu <strong>Ficha de actualización de datos</strong>. La directiva revisará tu solicitud y te llegará una copia de la ficha a tu correo. Si es aceptada, te avisaremos para que termines tu inscripción en la App.</p>
 
     <div class="solicitud-grid">
-      <label>RUT<input name="rut" required autocomplete="off" placeholder="12.345.678-9"></label>
-      <label>Fecha de nacimiento<input name="fecha_nacimiento" type="date" required></label>
       <label>Nombres<input name="nombres" required autocomplete="given-name"></label>
       <label>Apellido paterno<input name="apellido_paterno" required autocomplete="family-name"></label>
       <label>Apellido materno <span class="opcional">(opcional)</span><input name="apellido_materno"></label>
+      <label>RUT<input name="rut" required autocomplete="off" placeholder="12.345.678-9"></label>
+      <label class="ancho">Domicilio / dirección<input name="direccion" required maxlength="255" autocomplete="street-address" placeholder="Calle, número, depto o pasaje"></label>
+      <label>Ciudad<input name="ciudad" required maxlength="100" autocomplete="address-level2" value="Calama"></label>
       <label>Celular<input name="telefono" type="tel" required autocomplete="tel" placeholder="+56 9 1234 5678"></label>
+      <label>Fecha de nacimiento<input name="fecha_nacimiento" type="date" required></label>
+      <label>Estado civil
+        <select name="estado_civil" required>
+          <option value="">Selecciona…</option>
+          <option value="soltero">Soltero/a</option>
+          <option value="casado">Casado/a</option>
+          <option value="conviviente_civil">Conviviente civil</option>
+          <option value="separado">Separado/a</option>
+          <option value="divorciado">Divorciado/a</option>
+          <option value="viudo">Viudo/a</option>
+        </select>
+      </label>
       <label class="ancho">Correo electrónico<input name="email" type="email" required autocomplete="email"></label>
-      <label class="ancho">Comparsa que te interesa <span class="opcional">(opcional)</span>
+    </div>
+
+    <fieldset class="solicitud-grupo">
+      <legend>Sacramentos <span class="opcional">(marca los que tengas)</span></legend>
+      <div class="solicitud-opciones">
+        <label class="solicitud-check"><input type="checkbox" name="bautizo"> Bautizo</label>
+        <label class="solicitud-check"><input type="checkbox" name="comunion"> Comunión</label>
+        <label class="solicitud-check"><input type="checkbox" name="confirmacion"> Confirmación</label>
+      </div>
+    </fieldset>
+
+    <fieldset class="solicitud-grupo">
+      <legend>Condición</legend>
+      <div class="solicitud-opciones">
+        <label class="solicitud-check"><input type="radio" name="condicion" value="bailarin" required> Bailarín</label>
+        <label class="solicitud-check"><input type="radio" name="condicion" value="socio"> Socio</label>
+      </div>
+      <label class="solicitud-bloque" id="solicitudBloque" hidden>Bloque / fila <span class="opcional">(en caso que quieras ser China Supay, Diablesa o Diablo)</span>
         <select name="comparsa_interes">
           <option value="">Aún no lo sé</option>
           <option>Diablos</option>
@@ -664,11 +694,11 @@
           <option>China Supay</option>
         </select>
       </label>
-    </div>
+    </fieldset>
 
     <fieldset class="solicitud-apoderado" id="solicitudApoderado" hidden>
       <legend>Datos del apoderado</legend>
-      <p>Como eres menor de edad, necesitamos los datos de tu apoderado.</p>
+      <p>Como eres menor de 18 años, necesitamos los datos de tu apoderado.</p>
       <div class="solicitud-grid">
         <label class="ancho">Nombre completo del apoderado<input name="nombre_apoderado"></label>
         <label>RUT del apoderado<input name="rut_apoderado" autocomplete="off" placeholder="12.345.678-9"></label>
@@ -676,11 +706,30 @@
       </div>
     </fieldset>
 
+    <fieldset class="solicitud-grupo">
+      <legend>¿Vienes de otro baile religioso? <span class="opcional">(opcional)</span></legend>
+      <label>Nombre del baile<input name="baile_anterior" maxlength="150"></label>
+      <div class="solicitud-opciones" id="solicitudEntidad" hidden>
+        <label class="solicitud-check"><input type="radio" name="baile_anterior_entidad" value="asociacion"> Asociación</label>
+        <label class="solicitud-check"><input type="radio" name="baile_anterior_entidad" value="federacion"> Federación</label>
+        <label class="solicitud-check"><input type="radio" name="baile_anterior_entidad" value="central_caporales"> Central Caporales</label>
+      </div>
+    </fieldset>
+
     <label class="ancho">Mensaje <span class="opcional">(opcional)</span><textarea name="mensaje" rows="3" maxlength="500"></textarea></label>
+
+    <div class="solicitud-firma">
+      <div class="solicitud-firma-head">
+        <span id="solicitudFirmaTitulo">Firma</span>
+        <button class="solicitud-firma-borrar" type="button" id="solicitudFirmaBorrar">Borrar firma</button>
+      </div>
+      <canvas id="solicitudFirma" width="600" height="200" aria-label="Recuadro para firmar con el dedo o el mouse" role="img"></canvas>
+      <p>Firma con el dedo o con el mouse dentro del recuadro.</p>
+    </div>
 
     <label class="solicitud-trampa" aria-hidden="true">Sitio web<input name="sitio_web" tabindex="-1" autocomplete="off"></label>
 
-    <label class="solicitud-check"><input type="checkbox" name="acepta_datos" required> Autorizo a la Gran Diablada Calameña a usar estos datos solo para revisar mi solicitud y contactarme.</label>
+    <label class="solicitud-check"><input type="checkbox" name="acepta_datos" required> Autorizo a la Gran Diablada Calameña a usar estos datos solo para revisar mi solicitud, contactarme y mantener mi ficha de integrante.</label>
 
     <p class="solicitud-estado" id="solicitudEstado" role="status" aria-live="polite"></p>
 
@@ -705,6 +754,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=8" defer></script>
+<script src="js/main.js?v=9" defer></script>
 </body>
 </html>

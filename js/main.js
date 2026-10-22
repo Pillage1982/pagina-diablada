@@ -141,13 +141,20 @@ if (eventGrid) {
     });
 }
 
-// Solicitud de ingreso "Súmate a la promesa": se envía a la app
-// (app.gdcayquina.cl/publico/solicitud-ingreso), que avisa por correo a la directiva.
+// Solicitud de ingreso "Súmate a la promesa": llena la "Ficha de actualización de
+// datos GDC" (con firma dibujada) y se envía a la app
+// (app.gdcayquina.cl/publico/solicitud-ingreso), que arma el PDF de la ficha y lo
+// manda por correo a la directiva y al postulante; también se ve en el panel.
 var solicitudDialog = document.getElementById('solicitudDialog');
 var solicitudForm = document.getElementById('solicitudForm');
 var solicitudEstado = document.getElementById('solicitudEstado');
 var solicitudApoderado = document.getElementById('solicitudApoderado');
+var solicitudBloque = document.getElementById('solicitudBloque');
+var solicitudEntidad = document.getElementById('solicitudEntidad');
+var firmaCanvas = document.getElementById('solicitudFirma');
+var firmaTitulo = document.getElementById('solicitudFirmaTitulo');
 var EDAD_MAYORIA = 18;
+var FIRMA_LARGO_MINIMO = 60; // px de trazo, para no aceptar un simple toque
 var CAMPOS_APODERADO = ['nombre_apoderado', 'rut_apoderado', 'telefono_apoderado'];
 
 function edadDesde(fecha) {
@@ -171,6 +178,62 @@ function actualizarApoderado() {
   CAMPOS_APODERADO.forEach(function (campo) {
     solicitudForm.elements[campo].required = menor;
   });
+  firmaTitulo.textContent = menor ? 'Firma del apoderado' : 'Firma';
+}
+
+// El bloque/fila solo aplica a bailarines; la entidad, solo si viene de otro baile.
+function actualizarCondicion() {
+  solicitudBloque.hidden = solicitudForm.elements.condicion.value !== 'bailarin';
+}
+
+function actualizarBaileAnterior() {
+  solicitudEntidad.hidden = !solicitudForm.elements.baile_anterior.value.trim();
+}
+
+// Firma dibujada con el dedo o el mouse. El canvas mide 600 × 200 internamente y se
+// escala con CSS: las coordenadas del puntero se pasan a esa medida.
+var firmaLargo = 0;
+
+function limpiarFirma() {
+  firmaCanvas.getContext('2d').clearRect(0, 0, firmaCanvas.width, firmaCanvas.height);
+  firmaLargo = 0;
+}
+
+function iniciarFirma() {
+  var ctx = firmaCanvas.getContext('2d');
+  var ultimo = null;
+
+  function punto(e) {
+    var r = firmaCanvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - r.left) * firmaCanvas.width / r.width,
+      y: (e.clientY - r.top) * firmaCanvas.height / r.height
+    };
+  }
+
+  firmaCanvas.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    firmaCanvas.setPointerCapture(e.pointerId);
+    ultimo = punto(e);
+  });
+  firmaCanvas.addEventListener('pointermove', function (e) {
+    if (!ultimo) return;
+    var p = punto(e);
+    ctx.strokeStyle = '#1d1d1d';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(ultimo.x, ultimo.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    firmaLargo += Math.hypot(p.x - ultimo.x, p.y - ultimo.y);
+    ultimo = p;
+  });
+  ['pointerup', 'pointercancel'].forEach(function (tipo) {
+    firmaCanvas.addEventListener(tipo, function () { ultimo = null; });
+  });
+  document.getElementById('solicitudFirmaBorrar').addEventListener('click', limpiarFirma);
 }
 
 function rutValido(rut) {
@@ -206,11 +269,19 @@ function errorFormulario(f) {
   if (f.apellido_paterno.value.trim().length < 2) return ['apellido_paterno', 'Ingresa tu apellido paterno.'];
   if (!celularValido(f.telefono.value)) return ['telefono', 'Ingresa un celular válido, por ejemplo +56 9 1234 5678.'];
   if (!f.email.checkValidity() || !f.email.value) return ['email', 'Ingresa un correo electrónico válido.'];
+  if (f.direccion.value.trim().length < 5) return ['direccion', 'Ingresa tu domicilio.'];
+  if (f.ciudad.value.trim().length < 2) return ['ciudad', 'Ingresa tu ciudad.'];
+  if (!f.estado_civil.value) return ['estado_civil', 'Selecciona tu estado civil.'];
+  if (!f.condicion.value) return [f.condicion[0], 'Indica si ingresas como bailarín o socio.'];
   if (esMenor()) {
     if (f.nombre_apoderado.value.trim().length < 5) return ['nombre_apoderado', 'Ingresa el nombre completo del apoderado.'];
     if (!rutValido(f.rut_apoderado.value)) return ['rut_apoderado', 'Revisa el RUT del apoderado: no es válido.'];
     if (!celularValido(f.telefono_apoderado.value)) return ['telefono_apoderado', 'Ingresa un celular válido para el apoderado.'];
   }
+  if (f.baile_anterior.value.trim() && !f.baile_anterior_entidad.value) {
+    return [f.baile_anterior_entidad[0], 'Indica si tu baile anterior pertenece a la Asociación, Federación o Central de Caporales.'];
+  }
+  if (firmaLargo < FIRMA_LARGO_MINIMO) return [firmaCanvas, esMenor() ? 'Falta la firma del apoderado.' : 'Falta tu firma.'];
   if (!f.acepta_datos.checked) return ['acepta_datos', 'Debes autorizar el uso de tus datos para enviar la solicitud.'];
   return null;
 }
@@ -233,6 +304,11 @@ if (solicitudDialog && solicitudForm) {
   });
 
   solicitudForm.elements.fecha_nacimiento.addEventListener('change', actualizarApoderado);
+  Array.prototype.forEach.call(solicitudForm.elements.condicion, function (radio) {
+    radio.addEventListener('change', actualizarCondicion);
+  });
+  solicitudForm.elements.baile_anterior.addEventListener('input', actualizarBaileAnterior);
+  iniciarFirma();
 
   solicitudForm.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -240,7 +316,9 @@ if (solicitudDialog && solicitudForm) {
     var error = errorFormulario(f);
     if (error) {
       mostrarEstado(error[1], 'error');
-      f[error[0]].focus();
+      var campo = typeof error[0] === 'string' ? f[error[0]] : error[0];
+      if (campo === firmaCanvas) campo.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      else campo.focus();
       return;
     }
 
@@ -252,8 +330,18 @@ if (solicitudDialog && solicitudForm) {
       apellido_materno: f.apellido_materno.value,
       telefono: f.telefono.value,
       email: f.email.value,
-      comparsa_interes: f.comparsa_interes.value,
+      direccion: f.direccion.value,
+      ciudad: f.ciudad.value,
+      estado_civil: f.estado_civil.value,
+      bautizo: f.bautizo.checked,
+      comunion: f.comunion.checked,
+      confirmacion: f.confirmacion.checked,
+      condicion: f.condicion.value,
+      comparsa_interes: f.condicion.value === 'bailarin' ? f.comparsa_interes.value : '',
+      baile_anterior: f.baile_anterior.value,
+      baile_anterior_entidad: f.baile_anterior.value.trim() ? f.baile_anterior_entidad.value : '',
       mensaje: f.mensaje.value,
+      firma: firmaCanvas.toDataURL('image/png'),
       sitio_web: f.sitio_web.value,
       acepta_datos: f.acepta_datos.checked
     };
@@ -278,9 +366,12 @@ if (solicitudDialog && solicitudForm) {
       })
       .then(function (data) {
         solicitudForm.reset();
+        limpiarFirma();
         actualizarApoderado();
+        actualizarCondicion();
+        actualizarBaileAnterior();
         mostrarEstado('¡Solicitud enviada' + (data.folio ? ' (folio ' + data.folio + ')' : '') +
-          '! La directiva la revisará y te contactaremos por correo.', 'ok');
+          '! Te enviamos una copia de tu ficha por correo. La directiva la revisará y te contactaremos.', 'ok');
       })
       .catch(function (err) {
         var texto = err instanceof TypeError

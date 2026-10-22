@@ -365,6 +365,22 @@ dialog.solicitud::backdrop{ background:rgba(20,12,6,.6); }
 .solicitud-apoderado{ border:1px solid var(--line); border-radius:4px; padding:1rem; margin:0; }
 .solicitud-apoderado legend{ font-family:'Archivo', sans-serif; font-weight:700; font-size:.85rem; padding:0 .4rem; color:var(--oxblood); }
 .solicitud-apoderado p{ margin:0 0 .8rem; font-size:.92rem; color:var(--ink-soft); }
+.solicitud-grupo{ border:1px solid var(--line); border-radius:4px; padding:.8rem 1rem 1rem; margin:0; display:flex; flex-direction:column; gap:.8rem; }
+.solicitud-grupo legend{ font-family:'Archivo', sans-serif; font-weight:700; font-size:.85rem; padding:0 .4rem; color:var(--oxblood); }
+.solicitud-grupo legend .opcional{ font-size:.8rem; }
+.solicitud-opciones{ display:flex; flex-wrap:wrap; gap:.6rem 1.4rem; }
+.solicitud-opciones[hidden], .solicitud-bloque[hidden]{ display:none; }
+.solicitud .solicitud-opciones .solicitud-check{ font-size:.92rem; align-items:center; }
+.solicitud .solicitud-opciones .solicitud-check input{ margin-top:0; }
+.solicitud-firma{ display:flex; flex-direction:column; gap:.4rem; }
+.solicitud-firma-head{ display:flex; justify-content:space-between; align-items:center; gap:1rem; font-family:'Archivo', sans-serif; font-weight:600; font-size:.8rem; }
+.solicitud-firma-borrar{ background:none; border:none; padding:0; font:inherit; font-weight:600; color:var(--azafran-ink); text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
+/* Siempre fondo blanco y tinta oscura: así se ve igual en modo claro y oscuro y en el PDF. */
+.solicitud-firma canvas{
+  width:100%; aspect-ratio:3 / 1; height:auto; background:#fff;
+  border:1px dashed var(--line); border-radius:4px; touch-action:none; cursor:crosshair;
+}
+.solicitud-firma p{ margin:0; font-size:.8rem; color:var(--ink-soft); }
 .solicitud .solicitud-check{ flex-direction:row; align-items:flex-start; gap:.6rem; font-weight:500; line-height:1.45; }
 .solicitud .solicitud-check input{ width:auto; margin-top:.15rem; accent-color:var(--azafran); }
 .solicitud .solicitud-trampa{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
