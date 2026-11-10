@@ -120,3 +120,9 @@ Sitio de la Gran Diablada Calameña. Hosting: Hostinger (con CDN). Repositorio: 
 - Se designó al **Primer Director: Rodrigo Montalbán Cofré** (antes aparecía «—» en la directiva).
 - Solo cambia `index.html` (texto). No se tocó CSS ni JS, así que no hay que subir versión `?v=N`.
 - **Archivo a subir a Hostinger:** `index.html`.
+
+### Ajustes de la directiva
+- Se **quitó el cargo de Coordinador** de la tabla.
+- Se **agregó un tercer Caporal: Alonso Maldonado Troncoso**.
+- Se corrigió el segundo apellido del Tesorero: **Wilson Muñoz Contreras** (antes «Contrera»).
+- Solo cambia `index.html`. No se tocó CSS ni JS.
