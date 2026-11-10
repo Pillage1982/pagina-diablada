@@ -111,3 +111,12 @@ Sitio de la Gran Diablada Calameña. Hosting: Hostinger (con CDN). Repositorio: 
 - **Orden de despliegue:** primero la app (dev.gdcayquina.cl y luego producción); después subir la web.
 - **Commits de la app:** `b93d70c` en `cliente/calamena` y merge `3130029` en `cliente/calamena-produccion` (ambos subidos a GitHub). No cambia `package.json`, así que no hace falta `npm install`.
 - **Zips en el escritorio:** `calamena-pruebas-b93d70c.zip` (dev.gdcayquina.cl), `calamena-produccion-3130029.zip` (app.gdcayquina.cl) y `gdcayquina-ficha-ingreso.zip` (sitio: `index.html`, `css/styles.css`, `js/main.js`).
+
+---
+
+## 10-11-2026
+
+### Primer Director designado
+- Se designó al **Primer Director: Rodrigo Montalbán Cofré** (antes aparecía «—» en la directiva).
+- Solo cambia `index.html` (texto). No se tocó CSS ni JS, así que no hay que subir versión `?v=N`.
+- **Archivo a subir a Hostinger:** `index.html`.
